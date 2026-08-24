@@ -1,0 +1,42 @@
+# Python/cache
+__pycache__/
+*.py[cod]
+.venv/
+.env
+
+# Local/editor files
+.DS_Store
+.idea/
+.vscode/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+mmcv/build/
+mmcv/*.egg-info/
+.dist_test/
+
+# Datasets, model weights, and experiment outputs
+data/
+work_dirs/
+outputs/
+wandb/
+checkpoints/
+*.pth
+*.pt
+*.ckpt
+*.pkl
+*.pickle
+*.onnx
+*.engine
+*.log
+
+# Archives/media
+*.zip
+*.tar
+*.tar.gz
+*.7z
+*.mp4
+*.avi
+*.mov

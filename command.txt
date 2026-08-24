@@ -1,0 +1,150 @@
+tail -f work_dirs/bevformer_tiny_nuscenes_mini/nohup.log
+
+ps aux | grep tools/train.py
+nvidia-smi
+
+
+cd /122090720/bevformer/BEVFormer
+
+mkdir -p work_dirs/bevformer_tiny_nuscenes_mini
+
+export PYTHONPATH=/122090720/bevformer/BEVFormer
+unset CC CXX CUDAHOSTCXX
+
+nohup python tools/train.py projects/configs/bevformer/bevformer-tiny.py \
+  --work-dir work_dirs/bevformer_tiny_nuscenes_mini \
+  > work_dirs/bevformer_tiny_nuscenes_mini/nohup.log 2>&1 &
+
+
+
+nohup python tools/train.py projects/configs/bevformer/bevformer-tiny.py \
+  --work-dir work_dirs/bevformer_tiny_mini_test \
+  --cfg-options total_epochs=1 runner.max_epochs=1 data.workers_per_gpu=0 \
+  > work_dirs/bevformer_tiny_mini_test/nohup.log 2>&1 &
+
+
+###############################################################################
+# Stage 1: SAM3 + BEVFormer post-process fusion
+# 1. Use SAM3 to generate 2D detections on nuScenes mini camera images.
+# 2. Project BEVFormer 3D detections back to cameras and re-score them with
+#    SAM3 2D support.
+###############################################################################
+
+source /122090720/miniconda3/etc/profile.d/conda.sh
+conda activate sam3
+
+cd /122090720/bevformer/BEVFormer
+
+python tools/sam3_nuscenes_inference.py \
+  --dataroot /122090720/datasets/nuscenes \
+  --version v1.0-mini \
+  --ann-file /122090720/datasets/nuscenes/nuscenes_infos_temporal_val.pkl \
+  --bev-results work_dirs/bevformer_base_nuscenes_mini/bev_weight_mini_detection/pts_bbox/results_nusc.json \
+  --sam3-repo /122090720/sam3/sam3_repo \
+  --checkpoint /122090720/sam3/sam3_weights/sam3.pt \
+  --output work_dirs/sam3_nuscenes_mini/sam3_2d_detections.json \
+  --score-thr 0.30 \
+  --nms-iou 0.70
+
+source /122090720/miniconda3/etc/profile.d/conda.sh
+conda activate bevformer
+
+cd /122090720/bevformer/BEVFormer
+
+python tools/sam3_rescore_nuscenes.py \
+  --dataroot /122090720/datasets/nuscenes \
+  --version v1.0-mini \
+  --bev-results work_dirs/bevformer_base_nuscenes_mini/bev_weight_mini_detection/pts_bbox/results_nusc.json \
+  --sam3-results work_dirs/sam3_nuscenes_mini/sam3_2d_detections.json \
+  --output work_dirs/sam3_nuscenes_mini/results_nusc_sam3_rescore.json \
+  --debug-output work_dirs/sam3_nuscenes_mini/sam3_rescore_debug.json \
+  --min-iou 0.10 \
+  --boost 0.30 \
+  --no-match-factor 0.70 \
+  --eval \
+  --eval-output-dir work_dirs/sam3_nuscenes_mini/eval_rescore
+
+
+
+
+source /122090720/miniconda3/etc/profile.d/conda.sh
+conda activate bevformer
+
+cd /122090720/bevformer/BEVFormer
+
+export PYTHONPATH=/122090720/bevformer/BEVFormer
+unset CC CXX CUDAHOSTCXX
+
+python -m torch.distributed.run --nproc_per_node=1 --master_port=29512 \
+  tools/test.py \
+  projects/configs/bevformer/bevformer-tiny.py \
+  bev_weight/latest.pth \
+  --launcher pytorch \
+  --out work_dirs/bevformer_tiny_nuscenes_mini/bev_weight_mini_detection_results.pkl \
+  --eval bbox \
+  --eval-options jsonfile_prefix=work_dirs/bevformer_tiny_nuscenes_mini/bev_weight_mini_detection \
+  --cfg-options \
+    data.workers_per_gpu=0 \
+    data.test.data_root=/122090720/datasets/nuscenes/ \
+    data.test.ann_file=/122090720/datasets/nuscenes/nuscenes_infos_temporal_val.pkl
+
+
+python tools/sam3_rescore_nuscenes.py \
+  --dataroot /122090720/datasets/nuscenes \
+  --version v1.0-mini \
+  --bev-results work_dirs/bevformer_base_nuscenes_mini/bev_weight_mini_detection/pts_bbox/results_nusc.json \
+  --sam3-results work_dirs/sam3_nuscenes_mini/sam3_2d_detections.json \
+  --output work_dirs/sam3_nuscenes_mini/ablations/miou_0.05_nmf_0.7/results_nusc.json \
+  --debug-output work_dirs/sam3_nuscenes_mini/ablations/miou_0.05_nmf_0.7/debug.json \
+  --min-iou 0.05 \
+  --boost 0.30 \
+  --no-match-factor 0.70 \
+  --eval \
+  --eval-output-dir work_dirs/sam3_nuscenes_mini/ablations/miou_0.05_nmf_0.7/eval
+
+
+###############################################################################
+# Enhanced Stage 1:
+# multi-camera support + vehicle-compatible matching + mask coverage.
+###############################################################################
+
+source /122090720/miniconda3/etc/profile.d/conda.sh
+conda activate sam3
+
+cd /122090720/bevformer/BEVFormer
+
+python tools/sam3_nuscenes_inference.py \
+  --dataroot /122090720/datasets/nuscenes \
+  --version v1.0-mini \
+  --ann-file /122090720/datasets/nuscenes/nuscenes_infos_temporal_val.pkl \
+  --bev-results work_dirs/bevformer_base_nuscenes_mini/bev_weight_mini_detection/pts_bbox/results_nusc.json \
+  --sam3-repo /122090720/sam3/sam3_repo \
+  --checkpoint /122090720/sam3/sam3_weights/sam3.pt \
+  --output work_dirs/sam3_nuscenes_mini/sam3_2d_detections_with_masks.json \
+  --score-thr 0.30 \
+  --nms-iou 0.70 \
+  --save-masks
+
+source /122090720/miniconda3/etc/profile.d/conda.sh
+conda activate bevformer
+
+cd /122090720/bevformer/BEVFormer
+
+python tools/sam3_rescore_nuscenes.py \
+  --dataroot /122090720/datasets/nuscenes \
+  --version v1.0-mini \
+  --bev-results work_dirs/bevformer_base_nuscenes_mini/bev_weight_mini_detection/pts_bbox/results_nusc.json \
+  --sam3-results work_dirs/sam3_nuscenes_mini/sam3_2d_detections_with_masks.json \
+  --output work_dirs/sam3_nuscenes_mini/enhanced/results_nusc.json \
+  --debug-output work_dirs/sam3_nuscenes_mini/enhanced/debug.json \
+  --min-iou 0.05 \
+  --boost 0.30 \
+  --no-match-factor 0.70 \
+  --vehicle-compatible \
+  --multi-camera \
+  --multi-camera-weight 0.25 \
+  --mask-coverage \
+  --iou-weight 0.60 \
+  --coverage-weight 0.40 \
+  --eval \
+  --eval-output-dir work_dirs/sam3_nuscenes_mini/enhanced/eval
