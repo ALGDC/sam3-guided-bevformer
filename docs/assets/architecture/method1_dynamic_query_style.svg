@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <defs>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+      <path d="M 0 0 L 14 7 L 0 14 z" fill="#111827"/>
+    </marker>
+    <linearGradient id="redHot" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="55%" stop-color="#fee2e2"/>
+      <stop offset="100%" stop-color="#ef1b0c"/>
+    </linearGradient>
+    <style>
+      .title{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:38px;font-weight:800;fill:#111827}
+      .blueTitle{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:36px;font-weight:800;fill:#083a9b}
+      .label{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:30px;font-weight:700;fill:#111827}
+      .blueLabel{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:30px;font-weight:700;fill:#083a9b}
+      .small{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:24px;fill:#111827}
+      .note{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:32px;font-weight:800;fill:#083a9b}
+      .tiny{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:19px;fill:#334155}
+      .dashBox{fill:#fbfdff;stroke:#1646bd;stroke-width:3;stroke-dasharray:16 12;rx:24}
+      .softHeader{fill:#eff6ff;opacity:0.95}
+      .matrixCell{fill:#fff7f3;stroke:#1f2937;stroke-width:2}
+      .hot1{fill:#ef3b2d;stroke:#1f2937;stroke-width:2}
+      .hot2{fill:#fb5a4a;stroke:#1f2937;stroke-width:2}
+      .hot3{fill:#f04438;stroke:#1f2937;stroke-width:2}
+      .query1{fill:#c4a3ff;stroke:#7c3aed;stroke-width:2.2;rx:8}
+      .query2{fill:#b7e3a4;stroke:#4d9f37;stroke-width:2.2;rx:8}
+      .query3{fill:#ffe29a;stroke:#f59e0b;stroke-width:2.2;rx:8}
+      .query4{fill:#a8c7ff;stroke:#2563eb;stroke-width:2.2;rx:8}
+      .query5{fill:#ffc9d6;stroke:#db2777;stroke-width:2.2;rx:8}
+      .query6{fill:#d1d5db;stroke:#4b5563;stroke-width:2.2;rx:8}
+      .arrow{stroke:#111827;stroke-width:3.2;fill:none;marker-end:url(#arrow)}
+      .bottomBox{fill:#f8fbff;stroke:#3b82f6;stroke-width:3;rx:22}
+    </style>
+  </defs>
+  <rect width="1600" height="1000" fill="#ffffff"/>
+
+  <rect x="70" y="120" width="380" height="610" class="dashBox"/>
+  <rect x="72" y="122" width="376" height="100" class="softHeader" rx="22"/>
+  <text x="260" y="185" text-anchor="middle" class="blueTitle">SAM3 伪标签</text>
+  <text x="150" y="305" class="blueLabel">car</text>
+  <text x="150" y="415" class="blueLabel">pedestrian</text>
+  <text x="150" y="525" class="blueLabel">traffic cone</text>
+  <text x="150" y="635" class="blueLabel">...</text>
+
+  <path d="M485 410 L575 410" class="arrow"/>
+
+  <text x="960" y="80" text-anchor="middle" class="title">Method 1: Dynamic Query Baseline</text>
+  <text x="960" y="120" text-anchor="middle" class="small">
+    <tspan x="960" dy="0">SAM3 类别提示进入 BEVFormer Decoder</tspan>
+    <tspan x="960" dy="28">影响多条 object queries 的类别响应</tspan>
+  </text>
+
+  <text x="975" y="188" text-anchor="middle" class="title">BEVFormer Decoder（多条 Queries）</text>
+  <rect x="690" y="230" width="75" height="75" class="query1"/>
+  <rect x="820" y="230" width="75" height="75" class="query2"/>
+  <rect x="950" y="230" width="75" height="75" class="query3"/>
+  <rect x="1080" y="230" width="75" height="75" class="query4"/>
+  <rect x="1210" y="230" width="75" height="75" class="query5"/>
+  <rect x="1340" y="230" width="75" height="75" class="query6"/>
+  <text x="1480" y="276" text-anchor="middle" class="title">...</text>
+
+  <path d="M727 325 L727 390" class="arrow"/>
+  <path d="M857 325 L857 390" class="arrow"/>
+  <path d="M987 325 L987 390" class="arrow"/>
+  <path d="M1117 325 L1117 390" class="arrow"/>
+  <path d="M1247 325 L1247 390" class="arrow"/>
+  <path d="M1377 325 L1377 390" class="arrow"/>
+
+  <text x="610" y="455" text-anchor="end" class="label">car</text>
+  <text x="610" y="545" text-anchor="end" class="label">pedestrian</text>
+  <text x="610" y="635" text-anchor="end" class="label">traffic cone</text>
+  <text x="610" y="725" text-anchor="end" class="label">...</text>
+
+  <g transform="translate(650,395)">
+    <rect x="0" y="0" width="760" height="88" class="matrixCell"/>
+    <rect x="0" y="0" width="126" height="88" class="hot1"/>
+    <rect x="126" y="0" width="126" height="88" class="matrixCell"/>
+    <rect x="252" y="0" width="126" height="88" class="matrixCell"/>
+    <rect x="378" y="0" width="126" height="88" class="matrixCell"/>
+    <rect x="504" y="0" width="126" height="88" class="matrixCell"/>
+    <rect x="630" y="0" width="130" height="88" class="matrixCell"/>
+
+    <rect x="0" y="88" width="126" height="88" class="matrixCell"/>
+    <rect x="126" y="88" width="126" height="88" class="matrixCell"/>
+    <rect x="252" y="88" width="126" height="88" class="hot2"/>
+    <rect x="378" y="88" width="126" height="88" class="matrixCell"/>
+    <rect x="504" y="88" width="126" height="88" class="matrixCell"/>
+    <rect x="630" y="88" width="130" height="88" class="matrixCell"/>
+
+    <rect x="0" y="176" width="126" height="88" class="matrixCell"/>
+    <rect x="126" y="176" width="126" height="88" class="matrixCell"/>
+    <rect x="252" y="176" width="126" height="88" class="matrixCell"/>
+    <rect x="378" y="176" width="126" height="88" class="matrixCell"/>
+    <rect x="504" y="176" width="126" height="88" class="hot3"/>
+    <rect x="630" y="176" width="130" height="88" class="matrixCell"/>
+
+    <rect x="0" y="264" width="126" height="88" class="matrixCell"/>
+    <rect x="126" y="264" width="126" height="88" class="matrixCell"/>
+    <rect x="252" y="264" width="126" height="88" class="matrixCell"/>
+    <rect x="378" y="264" width="126" height="88" class="matrixCell"/>
+    <rect x="504" y="264" width="126" height="88" class="matrixCell"/>
+    <rect x="630" y="264" width="130" height="88" class="matrixCell"/>
+    <text x="65" y="318" text-anchor="middle" class="small">...</text>
+    <text x="190" y="318" text-anchor="middle" class="small">...</text>
+    <text x="315" y="318" text-anchor="middle" class="small">...</text>
+    <text x="440" y="318" text-anchor="middle" class="small">...</text>
+    <text x="565" y="318" text-anchor="middle" class="small">...</text>
+    <text x="695" y="318" text-anchor="middle" class="small">...</text>
+  </g>
+
+  <rect x="1490" y="410" width="36" height="260" fill="url(#redHot)" stroke="#111827" stroke-width="2"/>
+  <text x="1508" y="395" text-anchor="middle" class="label">高</text>
+  <text x="1508" y="710" text-anchor="middle" class="label">低</text>
+
+  <text x="880" y="780" text-anchor="middle" class="label">
+    <tspan x="880" dy="0">对每个 SAM3 类别</tspan>
+    <tspan x="880" dy="34">在所有 query 中鼓励至少一个高响应</tspan>
+  </text>
+  <path d="M880 828 L880 870" class="arrow"/>
+  <rect x="330" y="885" width="1100" height="80" class="bottomBox"/>
+  <text x="880" y="923" text-anchor="middle" class="note">
+    <tspan x="880" dy="0">目标：让 BEVFormer decoder query</tspan>
+    <tspan x="880" dy="34">获得 SAM3 类别提示</tspan>
+  </text>
+</svg>

@@ -1,0 +1,117 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <defs>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+      <path d="M 0 0 L 14 7 L 0 14 z" fill="#111827"/>
+    </marker>
+    <linearGradient id="bevHot" x1="0" y1="1" x2="1" y2="0">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="55%" stop-color="#dbeafe"/>
+      <stop offset="100%" stop-color="#ef4444"/>
+    </linearGradient>
+    <style>
+      .title{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:38px;font-weight:800;fill:#111827}
+      .blueTitle{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:34px;font-weight:800;fill:#083a9b}
+      .label{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:27px;font-weight:700;fill:#111827}
+      .blueLabel{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:25px;font-weight:700;fill:#083a9b}
+      .small{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:21px;fill:#111827}
+      .tiny{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:17px;fill:#334155}
+      .note{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:31px;font-weight:800;fill:#083a9b}
+      .dashBox{fill:#fbfdff;stroke:#1646bd;stroke-width:3;stroke-dasharray:16 12;rx:24}
+      .softHeader{fill:#eff6ff;opacity:0.95}
+      .query{fill:#eef2ff;stroke:#4f46e5;stroke-width:2.5;rx:14}
+      .bev{fill:#f8fafc;stroke:#1f2937;stroke-width:2.2}
+      .hot{fill:url(#bevHot);stroke:#1f2937;stroke-width:2.2}
+      .ray{stroke:#ef4444;stroke-width:6;stroke-linecap:round;opacity:0.65}
+      .ray2{stroke:#f97316;stroke-width:5;stroke-linecap:round;opacity:0.55}
+      .arrow{stroke:#111827;stroke-width:3.2;fill:none;marker-end:url(#arrow)}
+      .greenArrow{stroke:#059669;stroke-width:3.2;fill:none;marker-end:url(#arrow)}
+      .bottomBox{fill:#f8fbff;stroke:#3b82f6;stroke-width:3;rx:22}
+    </style>
+  </defs>
+  <rect width="1600" height="1000" fill="#ffffff"/>
+
+  <text x="905" y="75" text-anchor="middle" class="title">Method 2: 13D Query Init + BEV Prior</text>
+  <text x="905" y="108" text-anchor="middle" class="small">
+    <tspan x="905" dy="0">把 SAM3 2D proposal 几何化</tspan>
+    <tspan x="905" dy="28">类别提示进入 object query，camera ray 进入 BEV query</tspan>
+  </text>
+
+  <rect x="60" y="135" width="420" height="620" class="dashBox"/>
+  <rect x="62" y="137" width="416" height="95" class="softHeader" rx="22"/>
+  <text x="270" y="198" text-anchor="middle" class="blueTitle">SAM3 13D Proposal</text>
+  <text x="105" y="285" class="blueLabel">2D box: x, y, w, h</text>
+  <text x="105" y="340" class="blueLabel">score: s</text>
+  <text x="105" y="395" class="blueLabel">class id: c</text>
+  <text x="105" y="450" class="blueLabel">camera id: v</text>
+  <text x="105" y="505" class="blueLabel">ray dir: r</text>
+  <text x="105" y="535" class="tiny">r = (rx, ry, rz)</text>
+  <text x="105" y="585" class="blueLabel">cam pos: o</text>
+  <text x="105" y="615" class="tiny">o = (ox, oy, oz)</text>
+  <text x="105" y="675" class="tiny">
+    <tspan x="105" dy="0">p = [2D geom, score, class, camera,</tspan>
+    <tspan x="105" dy="24">ray, camera position]</tspan>
+  </text>
+
+  <path d="M505 315 L610 315" class="arrow"/>
+  <path d="M505 575 L610 575" class="greenArrow"/>
+
+  <rect x="620" y="220" width="360" height="190" class="query"/>
+  <text x="800" y="268" text-anchor="middle" class="label">SAM Query Encoder</text>
+  <text x="800" y="310" text-anchor="middle" class="small">class emb + camera emb + ray MLP</text>
+  <text x="800" y="350" text-anchor="middle" class="small">输出 ΔQpos, ΔQcontent</text>
+  <text x="800" y="385" text-anchor="middle" class="tiny">Q' = Q + λq ΔQ</text>
+
+  <rect x="1090" y="220" width="340" height="190" class="query"/>
+  <text x="1260" y="258" text-anchor="middle" class="label">
+    <tspan x="1260" dy="0">BEVFormer</tspan>
+    <tspan x="1260" dy="32">Object Queries</tspan>
+  </text>
+  <text x="1260" y="310" text-anchor="middle" class="small">前 K 个 query 带 SAM3 几何提示</text>
+  <text x="1260" y="350" text-anchor="middle" class="small">其余 query 保持原始自由检测</text>
+
+  <path d="M980 315 L1090 315" class="arrow"/>
+
+  <rect x="620" y="485" width="360" height="225" class="query"/>
+  <text x="800" y="532" text-anchor="middle" class="label">SAM BEV Prior Encoder</text>
+  <text x="800" y="572" text-anchor="middle" class="small">计算 BEV cell 到 ray 的距离</text>
+  <text x="800" y="612" text-anchor="middle" class="small">a = s exp(-0.5(d/σ)^2)</text>
+  <text x="800" y="652" text-anchor="middle" class="tiny">B' = B + λb MLP(a)</text>
+
+  <g transform="translate(1090,480)">
+    <text x="170" y="-20" text-anchor="middle" class="label">BEV Grid Prior</text>
+    <rect x="0" y="0" width="320" height="260" class="bev" fill="#ffffff"/>
+    <g>
+      <rect x="0" y="0" width="80" height="65" class="bev" fill="#ffffff"/>
+      <rect x="80" y="0" width="80" height="65" class="bev" fill="#fef2f2"/>
+      <rect x="160" y="0" width="80" height="65" class="bev" fill="#fee2e2"/>
+      <rect x="240" y="0" width="80" height="65" class="bev" fill="#fff7ed"/>
+      <rect x="0" y="65" width="80" height="65" class="bev" fill="#eff6ff"/>
+      <rect x="80" y="65" width="80" height="65" class="hot"/>
+      <rect x="160" y="65" width="80" height="65" class="bev" fill="#fecaca"/>
+      <rect x="240" y="65" width="80" height="65" class="bev" fill="#fff7ed"/>
+      <rect x="0" y="130" width="80" height="65" class="bev" fill="#eff6ff"/>
+      <rect x="80" y="130" width="80" height="65" class="bev" fill="#dbeafe"/>
+      <rect x="160" y="130" width="80" height="65" class="bev" fill="#fee2e2"/>
+      <rect x="240" y="130" width="80" height="65" class="bev" fill="#fecaca"/>
+      <rect x="0" y="195" width="80" height="65" class="bev" fill="#ffffff"/>
+      <rect x="80" y="195" width="80" height="65" class="bev" fill="#eff6ff"/>
+      <rect x="160" y="195" width="80" height="65" class="bev" fill="#dbeafe"/>
+      <rect x="240" y="195" width="80" height="65" class="hot"/>
+    </g>
+    <line x1="20" y1="235" x2="300" y2="25" class="ray"/>
+    <line x1="10" y1="85" x2="300" y2="210" class="ray2"/>
+  </g>
+
+  <path d="M980 600 L1090 600" class="greenArrow"/>
+
+  <text x="800" y="798" text-anchor="middle" class="label">
+    <tspan x="800" dy="0">同一个 SAM3 proposal</tspan>
+    <tspan x="800" dy="32">同时生成 query-level bias 和 BEV-level bias</tspan>
+  </text>
+  <path d="M800 850 L800 875" class="arrow"/>
+  <rect x="260" y="890" width="1080" height="78" class="bottomBox"/>
+  <text x="800" y="926" text-anchor="middle" class="note">
+    <tspan x="800" dy="0">让 2D proposal 具备</tspan>
+    <tspan x="800" dy="32">多相机 3D 几何方向感</tspan>
+  </text>
+</svg>

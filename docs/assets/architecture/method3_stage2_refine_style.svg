@@ -1,0 +1,129 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="1000" viewBox="0 0 1600 1000">
+  <defs>
+    <marker id="arrow" markerWidth="14" markerHeight="14" refX="11" refY="7" orient="auto">
+      <path d="M 0 0 L 14 7 L 0 14 z" fill="#111827"/>
+    </marker>
+    <linearGradient id="redScale" x1="0" y1="1" x2="0" y2="0">
+      <stop offset="0%" stop-color="#ffffff"/>
+      <stop offset="60%" stop-color="#fecaca"/>
+      <stop offset="100%" stop-color="#dc2626"/>
+    </linearGradient>
+    <style>
+      .title{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:38px;font-weight:800;fill:#111827}
+      .blueTitle{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:34px;font-weight:800;fill:#083a9b}
+      .label{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:27px;font-weight:700;fill:#111827}
+      .blueLabel{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:25px;font-weight:700;fill:#083a9b}
+      .small{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:21px;fill:#111827}
+      .tiny{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:17px;fill:#334155}
+      .note{font-family:Arial,'Noto Sans SC','Microsoft YaHei',sans-serif;font-size:31px;font-weight:800;fill:#083a9b}
+      .dashBox{fill:#fbfdff;stroke:#1646bd;stroke-width:3;stroke-dasharray:16 12;rx:24}
+      .softHeader{fill:#eff6ff;opacity:0.95}
+      .box{fill:#f8fafc;stroke:#1f2937;stroke-width:2.2;rx:14}
+      .orange{fill:#fff7ed;stroke:#f97316;stroke-width:2.5;rx:14}
+      .green{fill:#ecfdf5;stroke:#059669;stroke-width:2.5;rx:14}
+      .cell{fill:#fff7f3;stroke:#1f2937;stroke-width:2}
+      .hot{fill:#ef4444;stroke:#1f2937;stroke-width:2}
+      .mid{fill:#fecaca;stroke:#1f2937;stroke-width:2}
+      .arrow{stroke:#111827;stroke-width:3.2;fill:none;marker-end:url(#arrow)}
+      .greenArrow{stroke:#059669;stroke-width:3.2;fill:none;marker-end:url(#arrow)}
+      .bottomBox{fill:#f8fbff;stroke:#3b82f6;stroke-width:3;rx:22}
+    </style>
+  </defs>
+  <rect width="1600" height="1000" fill="#ffffff"/>
+
+  <text x="920" y="75" text-anchor="middle" class="title">Method 3: Stage-2 Refine</text>
+  <text x="920" y="108" text-anchor="middle" class="small">
+    <tspan x="920" dy="0">把 BEVFormer 3D 框投影回相机</tspan>
+    <tspan x="920" dy="28">用 SAM3 box / mask 支持度校准 detection score</tspan>
+  </text>
+
+  <rect x="65" y="145" width="360" height="300" class="dashBox"/>
+  <rect x="67" y="147" width="356" height="85" class="softHeader" rx="22"/>
+  <text x="245" y="202" text-anchor="middle" class="blueTitle">BEVFormer 输出</text>
+  <text x="120" y="285" class="blueLabel">3D box D1</text>
+  <text x="120" y="345" class="blueLabel">3D box D2</text>
+  <text x="120" y="405" class="blueLabel">...</text>
+
+  <rect x="65" y="555" width="360" height="300" class="dashBox"/>
+  <rect x="67" y="557" width="356" height="85" class="softHeader" rx="22"/>
+  <text x="245" y="612" text-anchor="middle" class="blueTitle">SAM3 2D 支持</text>
+  <text x="120" y="695" class="blueLabel">box / mask</text>
+  <text x="120" y="755" class="blueLabel">score / class</text>
+  <text x="120" y="815" class="blueLabel">multi-camera</text>
+
+  <path d="M455 295 L555 365" class="arrow"/>
+  <path d="M455 705 L555 575" class="greenArrow"/>
+
+  <rect x="575" y="270" width="360" height="150" class="orange"/>
+  <text x="755" y="318" text-anchor="middle" class="label">3D -> 2D Projection</text>
+  <text x="755" y="358" text-anchor="middle" class="small">把每个 3D 框投影到六路相机</text>
+  <text x="755" y="390" text-anchor="middle" class="tiny">得到 projected 2D box</text>
+
+  <rect x="575" y="520" width="360" height="150" class="green"/>
+  <text x="755" y="568" text-anchor="middle" class="label">SAM3 Matching</text>
+  <text x="755" y="608" text-anchor="middle" class="small">类别兼容 + IoU + mask coverage</text>
+  <text x="755" y="640" text-anchor="middle" class="tiny">得到每个 camera 的 support</text>
+
+  <path d="M935 345 L1020 455" class="arrow"/>
+  <path d="M935 595 L1020 510" class="greenArrow"/>
+
+  <text x="1210" y="240" text-anchor="middle" class="title">Support Matrix</text>
+  <text x="1020" y="305" text-anchor="middle" class="label">D1</text>
+  <text x="1020" y="390" text-anchor="middle" class="label">D2</text>
+  <text x="1020" y="475" text-anchor="middle" class="label">D3</text>
+  <text x="1020" y="560" text-anchor="middle" class="label">...</text>
+  <text x="1105" y="290" text-anchor="middle" class="tiny">front</text>
+  <text x="1200" y="282" text-anchor="middle" class="tiny">
+    <tspan x="1200" dy="0">front</tspan>
+    <tspan x="1200" dy="18">left</tspan>
+  </text>
+  <text x="1300" y="290" text-anchor="middle" class="tiny">back</text>
+  <text x="1400" y="290" text-anchor="middle" class="tiny">...</text>
+
+  <g transform="translate(1060,315)">
+    <rect x="0" y="0" width="380" height="80" class="cell"/>
+    <rect x="0" y="0" width="95" height="80" class="hot"/>
+    <rect x="95" y="0" width="95" height="80" class="mid"/>
+    <rect x="190" y="0" width="95" height="80" class="cell"/>
+    <rect x="285" y="0" width="95" height="80" class="cell"/>
+
+    <rect x="0" y="80" width="95" height="80" class="cell"/>
+    <rect x="95" y="80" width="95" height="80" class="cell"/>
+    <rect x="190" y="80" width="95" height="80" class="hot"/>
+    <rect x="285" y="80" width="95" height="80" class="cell"/>
+
+    <rect x="0" y="160" width="95" height="80" class="cell"/>
+    <rect x="95" y="160" width="95" height="80" class="mid"/>
+    <rect x="190" y="160" width="95" height="80" class="cell"/>
+    <rect x="285" y="160" width="95" height="80" class="hot"/>
+
+    <rect x="0" y="240" width="95" height="80" class="cell"/>
+    <rect x="95" y="240" width="95" height="80" class="cell"/>
+    <rect x="190" y="240" width="95" height="80" class="cell"/>
+    <rect x="285" y="240" width="95" height="80" class="cell"/>
+    <text x="48" y="292" text-anchor="middle" class="small">...</text>
+    <text x="143" y="292" text-anchor="middle" class="small">...</text>
+    <text x="238" y="292" text-anchor="middle" class="small">...</text>
+    <text x="333" y="292" text-anchor="middle" class="small">...</text>
+  </g>
+
+  <rect x="1490" y="340" width="36" height="240" fill="url(#redScale)" stroke="#111827" stroke-width="2"/>
+  <text x="1508" y="325" text-anchor="middle" class="label">高</text>
+  <text x="1508" y="625" text-anchor="middle" class="label">低</text>
+
+  <text x="980" y="715" text-anchor="middle" class="label">
+    <tspan x="980" dy="0">多相机 support 聚合后</tspan>
+    <tspan x="980" dy="32">只更新 detection score</tspan>
+  </text>
+  <path d="M980 762 L980 790" class="arrow"/>
+  <rect x="410" y="810" width="1140" height="80" class="bottomBox"/>
+  <text x="980" y="846" text-anchor="middle" class="note">
+    <tspan x="980" dy="0">不改 3D 几何</tspan>
+    <tspan x="980" dy="32">center / size / yaw / velocity 保持不变</tspan>
+  </text>
+
+  <text x="1070" y="930" text-anchor="middle" class="small">
+    <tspan x="1070" dy="0">s_new = s_old (1 + βH)</tspan>
+    <tspan x="1070" dy="28">或 s_old + βH(1 - s_old)</tspan>
+  </text>
+</svg>

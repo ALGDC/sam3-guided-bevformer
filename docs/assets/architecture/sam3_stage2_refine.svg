@@ -1,0 +1,68 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#334155"/>
+    </marker>
+    <style>
+      .title{font-family:Arial,'Noto Sans SC',sans-serif;font-size:38px;font-weight:700;fill:#0f172a}
+      .label{font-family:Arial,'Noto Sans SC',sans-serif;font-size:24px;font-weight:700;fill:#0f172a}
+      .small{font-family:Arial,'Noto Sans SC',sans-serif;font-size:19px;fill:#334155}
+      .tiny{font-family:Arial,'Noto Sans SC',sans-serif;font-size:16px;fill:#475569}
+      .bev{fill:#eff6ff;stroke:#2563eb;stroke-width:2.3;rx:12}
+      .sam{fill:#ecfdf5;stroke:#047857;stroke-width:2.3;rx:12}
+      .calc{fill:#f8fafc;stroke:#64748b;stroke-width:1.8;rx:10}
+      .out{fill:#fff7ed;stroke:#ea580c;stroke-width:2.3;rx:12}
+      .arrow{stroke:#334155;stroke-width:2.7;fill:none;marker-end:url(#arrow)}
+      .samArrow{stroke:#059669;stroke-width:3;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#ffffff"/>
+  <text x="70" y="70" class="title">Stage-2 Refine: SAM3 Support-Based Score Calibration</text>
+  <text x="70" y="105" class="small">This stage does not change 3D geometry. It only recalibrates detection scores using projected 2D support.</text>
+
+  <rect x="70" y="190" width="250" height="140" class="bev"/>
+  <text x="195" y="235" text-anchor="middle" class="label">BEVFormer Output</text>
+  <text x="195" y="270" text-anchor="middle" class="small">3D boxes D</text>
+  <text x="195" y="300" text-anchor="middle" class="tiny">center / size / yaw / score</text>
+
+  <rect x="420" y="190" width="250" height="140" class="calc"/>
+  <text x="545" y="235" text-anchor="middle" class="label">Project to Cameras</text>
+  <text x="545" y="270" text-anchor="middle" class="small">3D box -> 2D boxes</text>
+  <text x="545" y="300" text-anchor="middle" class="tiny">six camera views</text>
+
+  <rect x="70" y="515" width="250" height="140" class="sam"/>
+  <text x="195" y="560" text-anchor="middle" class="label">SAM3 Proposals</text>
+  <text x="195" y="595" text-anchor="middle" class="small">2D boxes / masks</text>
+  <text x="195" y="625" text-anchor="middle" class="tiny">score + class</text>
+
+  <rect x="420" y="515" width="250" height="140" class="calc"/>
+  <text x="545" y="560" text-anchor="middle" class="label">Match Support</text>
+  <text x="545" y="595" text-anchor="middle" class="small">IoU + mask coverage</text>
+  <text x="545" y="625" text-anchor="middle" class="tiny">label compatible</text>
+
+  <rect x="780" y="355" width="330" height="170" class="calc"/>
+  <text x="945" y="400" text-anchor="middle" class="label">Support Score</text>
+  <text x="945" y="438" text-anchor="middle" class="small">h_m = sSAM(w_iou IoU + w_cov Cov)</text>
+  <text x="945" y="476" text-anchor="middle" class="small">H = min(1, h_best + w_multi sum h_m)</text>
+
+  <rect x="1210" y="355" width="290" height="170" class="out"/>
+  <text x="1355" y="400" text-anchor="middle" class="label">Refined Score</text>
+  <text x="1355" y="438" text-anchor="middle" class="small">snew = sold(1 + beta H)</text>
+  <text x="1355" y="476" text-anchor="middle" class="small">or linear blend</text>
+
+  <rect x="1210" y="630" width="290" height="100" class="calc"/>
+  <text x="1355" y="670" text-anchor="middle" class="label">Geometry unchanged</text>
+  <text x="1355" y="704" text-anchor="middle" class="small">center / size / yaw / velocity fixed</text>
+
+  <path d="M320 260 L420 260" class="arrow"/>
+  <path d="M320 585 L420 585" class="samArrow"/>
+  <path d="M670 260 C745 260 745 430 780 430" class="arrow"/>
+  <path d="M670 585 C745 585 745 455 780 455" class="samArrow"/>
+  <path d="M1110 440 L1210 440" class="arrow"/>
+  <path d="M1355 525 L1355 630" class="arrow"/>
+
+  <rect x="105" y="760" width="1390" height="70" class="calc"/>
+  <text x="800" y="790" text-anchor="middle" class="label">Role of Stage-2</text>
+  <text x="800" y="820" text-anchor="middle" class="small">It validates whether a 3D prediction has SAM3 2D evidence, then adjusts score only.</text>
+</svg>

@@ -23,6 +23,10 @@ For environment setup, see:
 
 - [ENVIRONMENT_SETUP.md](./ENVIRONMENT_SETUP.md)
 
+For supplementary fusion notes and presentation figures, see:
+
+- [Supplementary Documents](./docs/README.md)
+
 
 ## What Is Included
 

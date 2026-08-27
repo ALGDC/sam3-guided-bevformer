@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900">
+  <defs>
+    <marker id="arrow" markerWidth="12" markerHeight="12" refX="10" refY="6" orient="auto">
+      <path d="M 0 0 L 12 6 L 0 12 z" fill="#334155"/>
+    </marker>
+    <style>
+      .title{font-family:Arial,'Noto Sans SC',sans-serif;font-size:38px;font-weight:700;fill:#0f172a}
+      .label{font-family:Arial,'Noto Sans SC',sans-serif;font-size:24px;font-weight:700;fill:#0f172a}
+      .small{font-family:Arial,'Noto Sans SC',sans-serif;font-size:19px;fill:#334155}
+      .tiny{font-family:Arial,'Noto Sans SC',sans-serif;font-size:16px;fill:#475569}
+      .sam{fill:#ecfdf5;stroke:#047857;stroke-width:2.3;rx:12}
+      .query{fill:#eff6ff;stroke:#2563eb;stroke-width:2.3;rx:12}
+      .formula{fill:#f8fafc;stroke:#64748b;stroke-width:1.8;rx:10}
+      .box{fill:#fff7ed;stroke:#ea580c;stroke-width:2.3;rx:12}
+      .arrow{stroke:#334155;stroke-width:2.7;fill:none;marker-end:url(#arrow)}
+      .samArrow{stroke:#059669;stroke-width:3;fill:none;marker-end:url(#arrow)}
+    </style>
+  </defs>
+
+  <rect width="1600" height="900" fill="#ffffff"/>
+  <text x="70" y="70" class="title">Where SAM3 Is Injected: Query Bias + BEV Prior</text>
+  <text x="70" y="105" class="small">The SAM3 proposal set P is encoded into two additive terms: Gq(P) for object queries and Gb(P) for BEV queries.</text>
+
+  <rect x="70" y="175" width="270" height="150" class="sam"/>
+  <text x="205" y="215" text-anchor="middle" class="label">SAM3 Proposal</text>
+  <text x="205" y="250" text-anchor="middle" class="small">p_i in R13</text>
+  <text x="205" y="280" text-anchor="middle" class="tiny">2D box + score + class</text>
+  <text x="205" y="305" text-anchor="middle" class="tiny">cam id + ray + cam position</text>
+
+  <rect x="440" y="135" width="310" height="210" class="query"/>
+  <text x="595" y="178" text-anchor="middle" class="label">SAMProposalQueryEncoder</text>
+  <text x="595" y="215" text-anchor="middle" class="small">content MLP + pos MLP</text>
+  <text x="595" y="250" text-anchor="middle" class="tiny">class embedding</text>
+  <text x="595" y="275" text-anchor="middle" class="tiny">camera embedding</text>
+  <text x="595" y="300" text-anchor="middle" class="tiny">ray/cam-position MLP</text>
+
+  <rect x="870" y="135" width="290" height="210" class="formula"/>
+  <text x="1015" y="178" text-anchor="middle" class="label">Object Query Update</text>
+  <text x="1015" y="220" text-anchor="middle" class="small">Qpos' = Qpos + lambda_pos DeltaQpos</text>
+  <text x="1015" y="258" text-anchor="middle" class="small">Qcontent' = Qcontent + lambda_q DeltaQcontent</text>
+  <text x="1015" y="303" text-anchor="middle" class="tiny">only first K slots are SAM-biased</text>
+
+  <rect x="1260" y="185" width="250" height="120" class="box"/>
+  <text x="1385" y="230" text-anchor="middle" class="label">Decoder Input</text>
+  <text x="1385" y="265" text-anchor="middle" class="small">Q0SAM = Q0 + Gq(P)</text>
+
+  <rect x="440" y="510" width="310" height="170" class="query"/>
+  <text x="595" y="552" text-anchor="middle" class="label">SAMBEVPriorEncoder</text>
+  <text x="595" y="588" text-anchor="middle" class="small">ray distance to BEV grid</text>
+  <text x="595" y="622" text-anchor="middle" class="tiny">Gaussian weight</text>
+  <text x="595" y="648" text-anchor="middle" class="tiny">max over proposals</text>
+
+  <rect x="870" y="500" width="290" height="190" class="formula"/>
+  <text x="1015" y="542" text-anchor="middle" class="label">BEV Query Update</text>
+  <text x="1015" y="582" text-anchor="middle" class="small">a_ij = s_i exp(-0.5(d_ij/sigma)^2)</text>
+  <text x="1015" y="620" text-anchor="middle" class="small">a_j = max_i a_ij</text>
+  <text x="1015" y="658" text-anchor="middle" class="small">B_j' = B_j + lambda_b f_bev(a_j)</text>
+
+  <rect x="1260" y="535" width="250" height="120" class="box"/>
+  <text x="1385" y="580" text-anchor="middle" class="label">Encoder Input</text>
+  <text x="1385" y="615" text-anchor="middle" class="small">B0SAM = B0 + Gb(P)</text>
+
+  <rect x="70" y="520" width="270" height="150" class="sam"/>
+  <text x="205" y="560" text-anchor="middle" class="label">Same Proposal Set</text>
+  <text x="205" y="595" text-anchor="middle" class="small">P = {p_i}</text>
+  <text x="205" y="625" text-anchor="middle" class="tiny">used for spatial BEV bias</text>
+
+  <path d="M340 250 L440 240" class="samArrow"/>
+  <path d="M750 240 L870 240" class="arrow"/>
+  <path d="M1160 245 L1260 245" class="arrow"/>
+  <path d="M340 595 L440 595" class="samArrow"/>
+  <path d="M750 595 L870 595" class="arrow"/>
+  <path d="M1160 595 L1260 595" class="arrow"/>
+
+  <rect x="115" y="760" width="1370" height="75" class="formula"/>
+  <text x="800" y="792" text-anchor="middle" class="label">Final forward after adding SAM3</text>
+  <text x="800" y="824" text-anchor="middle" class="small">ySAM = Head( Dec( Q0 + Gq(P), Enc( B0 + Gb(P), F, Bprev ) ) )</text>
+</svg>
